@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Stream Overlay Animated</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans:ital,wght@0,400;0,700;1,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  /* ─── BAR ATAS ─── */
+  .bar-top {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 58px;
+    background: linear-gradient(180deg, #000 0%, #000 50%, transparent 100%);
+    z-index: 10;
+  }
+
+  /* ─── BAR BAWAH ─── */
+  .bar-bottom {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 58px;
+    background: linear-gradient(0deg, #000 0%, #000 50%, transparent 100%);
+    z-index: 10;
+  }
+
+  /* ─── GARIS DEKORATIF ─── */
+  .line-top {
+    position: fixed;
+    top: 58px; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%, rgba(255,255,255,0.08) 15%,
+      rgba(255,255,255,0.22) 50%,
+      rgba(255,255,255,0.08) 85%, transparent 100%);
+    z-index: 11;
+  }
+  .line-bottom {
+    position: fixed;
+    bottom: 58px; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%, rgba(255,255,255,0.08) 15%,
+      rgba(255,255,255,0.22) 50%,
+      rgba(255,255,255,0.08) 85%, transparent 100%);
+    z-index: 11;
+  }
+
+  /* ─── CORNER BRACKETS ─── */
+  .corner {
+    position: fixed;
+    width: 36px; height: 36px;
+    z-index: 20;
+    animation: cornerGlow 3s ease-in-out infinite;
+  }
+  .corner-tl { top: 64px; left: 10px; border-top: 1.5px solid rgba(255,255,255,0.35); border-left: 1.5px solid rgba(255,255,255,0.35); }
+  .corner-tr { top: 64px; right: 10px; border-top: 1.5px solid rgba(255,255,255,0.35); border-right: 1.5px solid rgba(255,255,255,0.35); animation-delay: 0.75s; }
+  .corner-bl { bottom: 64px; left: 10px; border-bottom: 1.5px solid rgba(255,255,255,0.35); border-left: 1.5px solid rgba(255,255,255,0.35); animation-delay: 1.5s; }
+  .corner-br { bottom: 64px; right: 10px; border-bottom: 1.5px solid rgba(255,255,255,0.35); border-right: 1.5px solid rgba(255,255,255,0.35); animation-delay: 2.25s; }
+  @keyframes cornerGlow {
+    0%,100% { opacity: 0.25; }
+    50% { opacity: 0.7; }
+  }
+
+  /* ─── KARAKTER MASCOT KIRI ─── */
+  .mascot-wrap {
+    position: fixed;
+    bottom: 58px;
+    left: 0;
+    width: 280px;
+    height: 360px;
+    z-index: 30;
+    overflow: hidden;
+  }
+
+  /* Gambar karakter, filter B&W */
+  .mascot-img {
+    position: absolute;
+    bottom: 0; left: -20px;
+    width: 300px;
+    height: 380px;
+    object-fit: cover;
+    object-position: top center;
+    filter: grayscale(100%) contrast(1.1) brightness(0.92);
+    mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 55%, transparent 100%),
+                linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 55%, transparent 100%),
+                        linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, transparent 100%);
+    mask-composite: intersect;
+    -webkit-mask-composite: destination-in;
+    animation: mascotFloat 4s ease-in-out infinite;
+  }
+  @keyframes mascotFloat {
+    0%,100% { transform: translateY(0px); }
+    50%      { transform: translateY(-8px); }
+  }
+
+  /* Shadow bawah mascot */
+  .mascot-shadow {
+    position: absolute;
+    bottom: 0; left: 20px;
+    width: 200px; height: 20px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, transparent 70%);
+    animation: shadowPulse 4s ease-in-out infinite;
+  }
+  @keyframes shadowPulse {
+    0%,100% { transform: scaleX(1); opacity: 0.5; }
+    50%      { transform: scaleX(0.8); opacity: 0.25; }
+  }
+
+  /* Scan line effect di atas mascot */
+  .mascot-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.06) 3px,
+      rgba(0,0,0,0.06) 4px
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Lingkaran glow di belakang mascot */
+  .mascot-glow {
+    position: absolute;
+    bottom: 40px; left: 50px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+    animation: glowPulse 4s ease-in-out infinite;
+  }
+  @keyframes glowPulse {
+    0%,100% { transform: scale(1); opacity: 0.5; }
+    50%      { transform: scale(1.15); opacity: 1; }
+  }
+
+  /* ─── FOLLOW REMINDER BAWAH TENGAH ─── */
+  .follow-wrap {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 40;
+    animation: followCycle 8s ease-in-out infinite;
+  }
+  @keyframes followCycle {
+    0%,8%   { opacity: 0; transform: translateX(-50%) translateY(8px); }
+    18%,75% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    88%,100%{ opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  }
+  .follow-main {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 8px;
+    color: #ffffff;
+    text-shadow: 0 0 30px rgba(255,255,255,0.25), 0 2px 6px rgba(0,0,0,1);
+  }
+  .follow-sub {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+
+  /* ─── TICKER ATAS ─── */
+  .ticker-wrap {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 58px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    z-index: 30;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .ticker-inner {
+    display: flex;
+    gap: 60px;
+    animation: tickerMove 18s linear infinite;
+  }
+  .ticker-inner span {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+  }
+  .ticker-dot {
+    color: rgba(255,255,255,0.15) !important;
+    font-size: 8px !important;
+    vertical-align: middle;
+  }
+  @keyframes tickerMove {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ─── LIVE BADGE KANAN ATAS ─── */
+  .live-badge {
+    position: fixed;
+    top: 14px;
+    right: 16px;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .live-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #fff;
+    animation: liveDot 1.4s ease-in-out infinite;
+  }
+  @keyframes liveDot {
+    0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255,255,255,0.6); }
+    50%      { opacity: 0.5; box-shadow: 0 0 0 5px rgba(255,255,255,0); }
+  }
+  .live-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.7);
+  }
+
+
+
+  /* ─── SCAN LINE OVERLAY GLOBAL (subtle) ─── */
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.025) 2px,
+      rgba(0,0,0,0.025) 3px
+    );
+  }
+
+  /* ─── NOISE/GRAIN OVERLAY ─── */
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 6;
+    opacity: 0.018;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    animation: grainShift 0.4s steps(1) infinite;
+  }
+  @keyframes grainShift {
+    0%  { background-position: 0 0; }
+    25% { background-position: -30px 10px; }
+    50% { background-position: 15px -20px; }
+    75% { background-position: -10px 25px; }
+  }
+
+</style>
+</head>
+<body>
+
+  <!-- Global overlays -->
+  <div class="scanlines"></div>
+  <div class="grain"></div>
+
+  <!-- Bar atas bawah -->
+  <div class="bar-top"></div>
+  <div class="bar-bottom"></div>
+  <div class="line-top"></div>
+  <div class="line-bottom"></div>
+
+  <!-- Corner brackets -->
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+
+  <!-- Live badge -->
+  <div class="live-badge">
+    <div class="live-dot"></div>
+    <div class="live-text">LIVE</div>
+  </div>
+
+  <!-- Ticker atas -->
+  <div class="ticker-wrap">
+    <div class="ticker-inner" id="ticker">
+      <span>JANGAN LUPA FOLLOW</span>
+      <span class="ticker-dot">◆</span>
+      <span>TAP LAYAR BUAT SUPPORT</span>
+      <span class="ticker-dot">◆</span>
+      <span>LIKE &amp; SHARE STREAM INI</span>
+      <span class="ticker-dot">◆</span>
+      <span>JANGAN LUPA FOLLOW</span>
+      <span class="ticker-dot">◆</span>
+      <span>TAP LAYAR BUAT SUPPORT</span>
+      <span class="ticker-dot">◆</span>
+      <span>LIKE &amp; SHARE STREAM INI</span>
+      <span class="ticker-dot">◆</span>
+    </div>
+  </div>
+
+  <!-- Karakter mascot kiri bawah -->
+  <div class="mascot-wrap">
+    <div class="mascot-glow"></div>
+    <img class="mascot-img" src="image.jpg" alt="mascot">
+    <div class="mascot-shadow"></div>
+  </div>
+
+  <!-- Follow reminder bawah tengah -->
+  <div class="follow-wrap">
+    <div class="follow-main">JANGAN LUPA FOLLOW</div>
+    <div class="follow-sub">tap layar untuk support</div>
+  </div>
+
+
+
+
+</body>
+</html>
